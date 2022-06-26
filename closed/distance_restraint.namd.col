@@ -1,0 +1,65 @@
+
+#
+# distance and rmsd restraint between yoda and closed protein residues
+#
+Colvarstrajfrequency    100 # 1 is for testing, change back to 100
+Colvarsrestartfrequency 100
+
+# This Colvars input defines a distance-to-bound-configuration (DBC) and a center-of-mass distance
+# coordinate, both with flat-well restraints (upperWall)
+
+
+colvar {
+    name lip_pock_DBC
+
+    rmsd { 
+        refpositionsfile restraints/f1_rmsd.ref  
+        atoms { 
+             atomnumbers {11910 11911 11912 11913 11914 11915 11916 11917 11918  11919 11920 11921 11922 11923 11924 11925 11926 11927 11928 11929 11930 }
+            rotateReference
+            centerReference
+            fittingGroup {              # protein atoms
+              atomsFile          restraints/f1_rmsd.ref
+              atomsCol           O
+            } 
+            refPositionsFile      restraints/f1_rmsd.ref
+        } 
+    }
+} 
+
+harmonicWalls {
+    name rmsd
+    colvars lip_pock_DBC
+    lowerWalls  0
+    upperWalls  3.0
+    forceConstant 100
+}
+
+
+colvar {
+  name lip_dist
+
+  distance {
+    group1 {
+      atomnumbers {11910 11911 11912 11913 11914 11915 11916 11917 11918  11919 11920 11921 11922 11923 11924 11925 11926 11927 11928 11929 11930 }
+      rotateReference
+      centerReference
+      fittingGroup {                    # protein atoms
+              atomsFile          restraints/peak_dist.ref
+              atomsCol           O
+      } 
+      refPositionsFile restraints/peak_dist.ref     # ref protein coords for fitting
+    }
+    group2 {
+      dummyAtom (-15.65,-12.79,-14.742)  # center of POCKET PROTEIN  in reference coordinates
+    }
+  }
+}
+
+harmonicWalls {
+    name distance
+    colvars lip_dist
+    lowerWalls  3.7
+    upperWalls  16.0
+    forceConstant 100
+}
